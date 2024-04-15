@@ -12,7 +12,17 @@ const background = new Sprite({
         y: 0,
     },
     imageSrc : "/first/img/background.png",
-})
+});
+
+const shop = new Sprite({
+    position: {
+        x: 600,
+        y: 128,
+    },
+    imageSrc : "/first/img/shop.png",
+    scale : 2.75,
+    framesMax : 6,
+});
 
 c.fillRect(0, 0, canvas.width, canvas.height);
 // 사각형으로 채워라
@@ -84,6 +94,7 @@ function animate() {
     c.fillRect(0, 0, canvas.width, canvas.height);
 
     background.update();
+    shop.update();
 
     player.update();
     enemy.update();
