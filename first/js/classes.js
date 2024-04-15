@@ -1,5 +1,12 @@
 class Sprite {
-    constructor({position, imageSrc, scale = 1, framesMax = 1}) {
+    constructor({position,
+        imageSrc,
+        scale = 1,
+        framesMax = 1,
+        offset = {
+            x:0, y:0
+        },
+    }) {
         this.position = position;
 
         this.width = 50;
@@ -13,6 +20,10 @@ class Sprite {
         this.framesMax = framesMax;
 
         this.framesCurrent = 0;
+        this.framesElapsed = 0;
+        this.framesHold = 10;
+
+        this.offset = offset;
     }
 
     draw() {
@@ -24,8 +35,8 @@ class Sprite {
             this.image.width / this.framesMax,
             this.image.height,
             // 이미지 자르는 영역
-            this.position.x,
-            this.position.y,
+            this.position.x - this.offset.x,
+            this.position.y - this.offset.y,
 
             (this.image.width / this.framesMax) * this.scale,
             this.image.height * this.scale
@@ -34,18 +45,41 @@ class Sprite {
 
     update() {
         this.draw();
-        if(this.framesCurrent < this.framesMax - 1) {
-            this.framesCurrent++;
-        }else {
-            this.framesCurrent = 0;
+        this.framesElapsed++;
+        if(this.framesElapsed % this.framesHold === 0) {
+            if(this.framesCurrent < this.framesMax - 1) {
+                this.framesCurrent++;
+            }else {
+                this.framesCurrent = 0;
+            }
         }
     }
 }
 
-class Fighter {
-    constructor({position, velocity, color = "red", offset})
-    {
-        this.position = position;
+// Sprite를 상속 받음
+class Fighter extends Sprite{
+    constructor({position,
+        velocity,
+        color = "red",
+        // offset,
+        imageSrc,
+        scale = 1,
+        framesMax = 1,
+        offset = {
+            x : 0,
+            y : 0,
+        },
+        sprites,
+    }) {
+
+    super({
+        position,
+        imageSrc,
+        scale,
+        framesMax,
+        offset
+    })
+        //this.position = position;
 
         this.velocity = velocity;
 
@@ -69,27 +103,45 @@ class Fighter {
         this.isAttacking;
 
         this.health = 100;
-    }
 
-    draw() {
-        c.fillStyle = this.color;
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        this.framesCurrent = 0;
+        this.framesElapsed = 0;
+        this.framesHold = 5;
 
-        if(this.isAttacking) {
-            c.fillStyle = "green";
-            c.fillRect(
-                this.attackBox.position.x,
-                this.attackBox.position.y,
-                this.attackBox.width,
-                this.attackBox.height
-            )
+        this.sprites = sprites;
+
+        for ( const sprite in sprites ) {
+            sprites[sprite].image = new Image();
+            sprites[sprite].image.src = sprites[sprite].imageSrc;
         }
-        
     }
+
+    // draw() {
+    //     c.fillStyle = this.color;
+    //     c.fillRect(this.position.x, this.position.y, this.width, this.height)
+
+    //     if(this.isAttacking) {
+    //         c.fillStyle = "green";
+    //         c.fillRect(
+    //             this.attackBox.position.x,
+    //             this.attackBox.position.y,
+    //             this.attackBox.width,
+    //             this.attackBox.height
+    //         )
+    //     }
+    // }
 
     update()
     {
         this.draw();
+        this.framesElapsed++;
+        if(this.framesElapsed % this.framesHold === 0) {
+            if(this.framesCurrent < this.framesMax - 1) {
+                this.framesCurrent++;
+            }else {
+                this.framesCurrent = 0;
+            }
+        }
 
         this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
         this.attackBox.position.y = this.position.y;
