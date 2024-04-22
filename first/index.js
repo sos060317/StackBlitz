@@ -4,7 +4,7 @@ const c = canvas.getContext("2d");
 canvas.width = 1024;
 canvas.height = 576;
 
-const gravity = 0.3;
+const gravity = 0.8;
 
 const background = new Sprite({
     position: {
@@ -58,6 +58,14 @@ const player = new Fighter({
         run : {
             imageSrc: "/first/img/1p/Run.png",
             framesMax: 8,
+        },
+        jump : {
+            imageSrc: "/first/img/1p/Jump.png",
+            framesMax: 2,
+        },
+        fall : {
+            imageSrc: "/first/img/1p/Fall.png",
+            framesMax: 2,
         }
    }
 });
@@ -130,14 +138,26 @@ function animate() {
     // else if(keys.d.pressed) {
     //     player.velocity.x = +1;
     // }
-    player.image = player.sprites.idle.image;
+    //player.image = player.sprites.idle.image;
+    //player.switcSprite('idle');
+
     if(keys.a.pressed && player.lastKey === "a") {
-        player.image = player.sprites.run.image;
+        //player.image = player.sprites.run.image;
         player.velocity.x = -6;
+        player.switcSprite('run');
     }
     else if(keys.d.pressed && player.lastKey === "d") {
-        player.image = player.sprites.run.image;
+        //player.image = player.sprites.run.image;
         player.velocity.x = +6;
+        player.switcSprite('run');
+    } else {
+        player.switcSprite('idle');
+    }
+
+    if(player.velocity.y < 0) {
+        player.switcSprite('jump');
+    } else if(player.velocity.y > 0) {
+        player.switcSprite('fall')
     }
 
     if(keys.ArrowLeft.pressed && enemy.lastKey === "ArrowLeft") {
@@ -185,7 +205,7 @@ window.addEventListener("keydown", (event) => {
             player.lastKey = "a";
             break;
         case "w":
-            player.velocity.y = -10;
+            player.velocity.y = -15;
             break;
         // 공격 키 추가
         case " ":
