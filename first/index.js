@@ -66,6 +66,10 @@ const player = new Fighter({
         fall : {
             imageSrc: "/first/img/1p/Fall.png",
             framesMax: 2,
+        },
+        attack1 : {
+            imageSrc: "/first/img/1p/Attack1.png",
+            framesMax: 6,
         }
    }
 });
@@ -84,9 +88,37 @@ const enemy = new Fighter({
         x :-50,
         y :0,
    },
-   imageSrc: "/first/img/1p/Idle.png",
-   framesMax: 8,
+   imageSrc: "/first/img/2p/Idle.png",
+   framesMax: 4,
    scale: 2.5,
+
+   offset : {
+        x : 215,
+        y : 167
+   },
+
+   sprites : {
+        idle : {
+            imageSrc: "/first/img/2p/Idle.png",
+            framesMax: 4,
+        },
+        run : {
+            imageSrc: "/first/img/2p/Run.png",
+            framesMax: 8,
+        },
+        jump : {
+            imageSrc: "/first/img/2p/Jump.png",
+            framesMax: 2,
+        },
+        fall : {
+            imageSrc: "/first/img/2p/Fall.png",
+            framesMax: 2,
+        },
+        attack1 : {
+            imageSrc: "/first/img/2p/Attack1.png",
+            framesMax: 4,
+        }
+   }
 });
 
 console.log(player);
@@ -161,10 +193,20 @@ function animate() {
     }
 
     if(keys.ArrowLeft.pressed && enemy.lastKey === "ArrowLeft") {
-        enemy.velocity.x = -2;
+        enemy.velocity.x = -6;
+        enemy.switcSprite('run');
     }
     else if(keys.ArrowRight.pressed && enemy.lastKey === "ArrowRight") {
-        enemy.velocity.x = +2;
+        enemy.velocity.x = +6;
+        enemy.switcSprite('run');
+    } else {
+        enemy.switcSprite('idle');
+    }
+
+    if(enemy.velocity.y < 0) {
+        enemy.switcSprite('jump');
+    } else if(player.velocity.y > 0) {
+        enemy.switcSprite('fall')
     }
 
     if(rectangularColision({rectangle1:player, rectangle2:enemy}) &&
@@ -221,7 +263,7 @@ window.addEventListener("keydown", (event) => {
             enemy.lastKey = "ArrowLeft";
             break;
         case "ArrowUp":
-            enemy.velocity.y = -10;
+            enemy.velocity.y = -15;
             break;
         case "ArrowDown":
             enemy.attack();

@@ -160,6 +160,8 @@ class Fighter extends Sprite{
     }
 
     attack() {
+        // 공격 스프라이트 재생
+        this.switcSprite('attack1');
         this.isAttacking = true;
         setTimeout(() => {
             this.isAttacking = false;
@@ -168,6 +170,9 @@ class Fighter extends Sprite{
     }
 
     switcSprite(sprite) {
+        if(this.image === this.sprites.attack1.image &&
+            this.framesCurrent < this.sprites.attack1.framesMax - 1
+            ) return;
         switch(sprite) {
             case 'idle':
                 if(this.image !== this.sprites.idle.image) {
@@ -197,6 +202,14 @@ class Fighter extends Sprite{
                 if(this.image !== this.sprites.fall.image) {
                     this.image = this.sprites.fall.image;
                     this.framesMax = this.sprites.fall.framesMax;
+                    // 프레임 초기화
+                    this.framesCurrent = 0;
+                }
+                break;
+            case 'attack1' :
+                if(this.image !== this.sprites.attack1.image) {
+                    this.image = this.sprites.attack1.image;
+                    this.framesMax = this.sprites.attack1.framesMax;
                     // 프레임 초기화
                     this.framesCurrent = 0;
                 }
