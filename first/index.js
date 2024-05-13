@@ -70,6 +70,10 @@ const player = new Fighter({
         attack1 : {
             imageSrc: "/first/img/1p/Attack1.png",
             framesMax: 6,
+        },
+        takeHit : {
+            imageSrc: "/first/img/1p/Take hit.png",
+            framesMax: 4,
         }
    },
 
@@ -127,6 +131,10 @@ const enemy = new Fighter({
         attack1 : {
             imageSrc: "/first/img/2p/Attack1.png",
             framesMax: 4,
+        },
+        takeHit : {
+            imageSrc: "/first/img/2p/Take hit (1).png",
+            framesMax: 3,
         }
    },
    attackBox : {
@@ -232,7 +240,11 @@ function animate() {
     {
         console.log("hit");
         player.isAttacking = false;
-        enemy.health -= 20;
+
+        // 피격시 함수 실행
+        enemy.takeHit();
+
+        //enemy.health -= 20;
         document.querySelector("#enemyHealth").style.width = enemy.health + "%";
     }
 
@@ -246,7 +258,10 @@ function animate() {
     {
         console.log("enemy attack");
         enemy.isAttacking = false;
-        player.health -= 20;
+
+        // 피격시 함수 실행
+        player.takeHit();
+
         document.querySelector("#playerHealth").style.width = player.health + "%";
     }
 
