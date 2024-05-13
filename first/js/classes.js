@@ -43,8 +43,7 @@ class Sprite {
             );
     }
 
-    update() {
-        this.draw();
+    animateFrame() {
         this.framesElapsed++;
         if(this.framesElapsed % this.framesHold === 0) {
             if(this.framesCurrent < this.framesMax - 1) {
@@ -53,6 +52,11 @@ class Sprite {
                 this.framesCurrent = 0;
             }
         }
+    }
+
+    update() {
+        this.draw();
+        this.animateFrame();
     }
 }
 
@@ -70,6 +74,7 @@ class Fighter extends Sprite{
             y : 0,
         },
         sprites,
+        attackBox = {offset : {}, width: undefined, height: undefined}
     }) {
 
     super({
@@ -89,13 +94,13 @@ class Fighter extends Sprite{
         this.lastKey;
 
         this.attackBox = {
-            width : 100,
-            height : 50,
+            width : attackBox.width,
+            height : attackBox.height,
             position: {
                 x: this.position.x,
                 y: this.position.y,
             },
-            offset,
+            offset : attackBox.offset,
         }
 
         this.color = color;
@@ -134,17 +139,18 @@ class Fighter extends Sprite{
     update()
     {
         this.draw();
-        this.framesElapsed++;
-        if(this.framesElapsed % this.framesHold === 0) {
-            if(this.framesCurrent < this.framesMax - 1) {
-                this.framesCurrent++;
-            }else {
-                this.framesCurrent = 0;
-            }
-        }
+        this.animateFrame();
 
         this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
-        this.attackBox.position.y = this.position.y;
+        this.attackBox.position.y = this.position.y + this.attackBox.offset.y ;
+
+        // 어택박스 확인
+        // c.fillRect(
+        //     this.attackBox.position.x,
+        //     this.attackBox.position.y,
+        //     this.attackBox.width,
+        //     this.attackBox.height
+        // )
 
         this.position.y += this.velocity.y;
 
@@ -163,10 +169,6 @@ class Fighter extends Sprite{
         // 공격 스프라이트 재생
         this.switcSprite('attack1');
         this.isAttacking = true;
-        setTimeout(() => {
-            this.isAttacking = false;
-        }, 100);
-        // 공격 딜레이 걸기
     }
 
     switcSprite(sprite) {
