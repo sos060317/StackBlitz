@@ -192,6 +192,8 @@ function animate() {
     background.update();
     shop.update();
 
+    c.fillStyle = 'rgba(255, 255, 255, 0.15)';
+    c.fillRect(0, 0, canvas.width, canvas.height);
     player.update();
     enemy.update();
 
@@ -253,7 +255,10 @@ function animate() {
         enemy.takeHit();
 
         //enemy.health -= 20;
-        document.querySelector("#enemyHealth").style.width = enemy.health + "%";
+        //document.querySelector("#enemyHealth").style.width = enemy.health + "%";
+        gsap.to("#enemyHealth", {
+            width : enemy.health + "%"
+        })
     }
 
     // 공격이 실패했을 때
@@ -270,7 +275,10 @@ function animate() {
         // 피격시 함수 실행
         player.takeHit();
 
-        document.querySelector("#playerHealth").style.width = player.health + "%";
+        //document.querySelector("#playerHealth").style.width = player.health + "%";
+        gsap.to("#playerHealth", {
+            width : player.health + "%"
+        })
     }
 
     // 공격이 실패했을 때
@@ -307,7 +315,7 @@ window.addEventListener("keydown", (event) => {
                 break;
             }
         }
-        
+
         if(!enemy.dead) {
             switch(event.key) {
             case "ArrowRight":
