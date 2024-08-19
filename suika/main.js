@@ -4,7 +4,11 @@ var Engine = Matter.Engine,
     Render = Matter.Render,
     Runner = Matter.Runner,
     Bodies = Matter.Bodies,
-    World = Matter.World;
+    World = Matter.World,
+    // 과일 조작을 위해 Body 선언
+    Body = Matter.Body,
+    // 과일 합치는 이벤트
+    Events = Matter.Events;
 
 // 엔진 선언
 const engine = Engine.create();
@@ -55,6 +59,8 @@ Runner.run(engine);
 
 let currentBody = null;
 let currentFruit = null;
+// 키 조작을 제어하는 변수
+let disableAction = false;
 
 function addFruit() {
     const index = Math.floor(Math.random() * 5);
@@ -79,5 +85,69 @@ function addFruit() {
 
     World.add(world, body);
 }
+
+window.onkeydown = (event) => {
+    if(disableAction)
+        return;
+
+    switch(event.code) {
+        case "KeyA":
+            if(currentBody.position.x - currentFruit.radius > 30)
+            Body.setPosition(currentBody, {
+                x : currentBody.position.x - 10,
+                y : currentBody.position.y,
+            });
+            break;
+        case "KeyD":
+            if(currentBody.position.x + currentFruit.radius < 590)
+            Body.setPosition(currentBody, {
+                x : currentBody.position.x + 10,
+                y : currentBody.position.y,
+            });
+            break;
+        case "KeyS":
+            currentBody.isSleeping = false;
+            disableAction = true;
+            // 1/1000초만큼 대기한 후 실행
+            setTimeout(() => {
+                addFruit();
+                disableAction = false;
+            }, 1000)
+            break;
+    }
+}
+
+Events.on(engine, "collisionStart", (event) => {
+    event.pairs.forEach((collision) => {
+        // 같은 과일일 경우
+        if(collision.bodyA.index == collision.bodyB.index) {
+            // 기존 과일값 저장
+            const index = collision.bodyA.index;
+
+            // 수박끼리 부딪힐 경우 예외처리
+            if(index === FRUITS.length - 1)
+                return;
+
+            // 과일 제거
+            World.remove(world, [collision.bodyA, collision.bodyB]);
+
+            const newFruit = FRUITS[index + 1];
+            const newBody = Bodies.circle(
+                // 부딪힌 지점의 x, y값을 가져온다.
+                collision.collision.supports[0].x,
+                collision.collision.supports[0].y,
+                newFruit.radius,
+                {
+                    // index 값 1 증가
+                    index : index + 1,
+                    // 과일 이미지 렌더링
+                    render : { sprite : { texture : `${newFruit.name}.png`}},
+                }
+            );
+            // 생성된 과일을 월드에 추가
+            World.add(world, newBody);
+        }
+    });
+})
 
 addFruit();
